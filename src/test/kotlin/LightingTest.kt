@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.Test
@@ -24,10 +25,33 @@ class LightingTest {
         System.setErr(originalErr)
     }
 
+//    @Test
+//    fun testTurnOnLog() {
+//        val lighting = Lighting()
+//        val lightingOnCommand: Command = LightingOnCommand(lighting)
+//        lightingOnCommand.execute()
+//        assertEquals("Light was turned on." + System.lineSeparator(), outContent.toString())
+//    }
+
     @Test
-    fun testTurnOnLog() {
+    fun testCommandInvoker() {
         val lighting = Lighting()
-        lighting.turnOn()
+        val lightingOnCommand: Command = LightingOnCommand(lighting)
+
+        val commandInvoker = CommandInvoker()
+        commandInvoker.setCommand(lightingOnCommand)
+        commandInvoker.runCommand()
+
         assertEquals("Light was turned on." + System.lineSeparator(), outContent.toString())
+    }
+
+    @Test
+    fun testThrowCommandMustBeSetException() {
+        val commandInvoker = CommandInvoker()
+
+        val exception = assertThrows<CommandMustBeSetException> {
+            commandInvoker.runCommand()
+        }
+        assertEquals("Command must be set.", exception.message)
     }
 }
